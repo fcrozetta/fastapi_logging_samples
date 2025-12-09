@@ -37,17 +37,17 @@ def send_debug(message: str = "Debug message"):
     logger.debug(message)
 
 
-@app.get("/info")
+@app.get("/info", tags=["logs"])
 def send_info(message: str = "info message"):
     logger.info("Sample of info")
 
 
-@app.get("/exception")
+@app.get("/exception", tags=["logs"])
 def send_exception(message: str = "exception message"):
     logger.exception(message)
 
 
-@app.get("/exception_stack")
+@app.get("/exception_stack", tags=["logs"])
 def send_exception_details(message: str = "exception_details message"):
     logger.exception(
         message,
@@ -55,17 +55,17 @@ def send_exception_details(message: str = "exception_details message"):
     )
 
 
-@app.get("/error")
+@app.get("/error", tags=["logs"])
 def send_error(message: str = "error message"):
     logger.error(message)
 
 
-@app.get("/critical")
+@app.get("/critical", tags=["logs"])
 def send_critical(message: str = "critical message"):
     logger.critical(message)
 
 
-@app.get("/stack")
+@app.get("/stacktrace", tags=["errors"])
 def broke_code():
     # * this code should create an error
     x = 1 / 0
