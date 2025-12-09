@@ -31,7 +31,7 @@ metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
 
-@app.get("/debug")
+@app.get("/debug", tags=["logs"])
 def send_debug(message: str = "Debug message"):
     """send a debug message"""
     logger.debug(message)
