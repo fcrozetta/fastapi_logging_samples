@@ -6,7 +6,7 @@ This api contain multiple endpoints that send different log messages, using diff
 
 ## Quick Start
 
-`docker run ghcr.io/fcrozetta/fastapi_logging_samples`
+`docker run -p 80:80 ghcr.io/fcrozetta/fastapi_logging_samples`
 
 ## Env vars
 
