@@ -8,6 +8,9 @@ This api contain multiple endpoints that send different log messages, using diff
 
 `docker run -p 80:80 ghcr.io/fcrozetta/fastapi_logging_samples`
 
+access documentation on `http://127.0.0.1/docs`
+
+> *NOTE:* prometheus endpoint won't be visible in user docs, but can be accessed via `/metrics` endpoint
 ## Env vars
 
 `LOG_FORMAT`: change the default logger format: the default format is: " %(name)s :: %(levelname)s :: %(message)s"
