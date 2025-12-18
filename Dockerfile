@@ -1,4 +1,7 @@
 FROM python:3.12-slim
+LABEL org.opencontainers.image.authors="Fernando Crozetta"
+LABEL org.opencontainers.image.description="A sample FastAPI application with OpenTelemetry instrumentation"
+LABEL org.opencontainers.image.source="github.com/fcrozetta/fastapi_logging_samples"
 
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=true
 ENV OTEL_PYTHON_LOG_LEVEL=INFO
