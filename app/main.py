@@ -8,9 +8,7 @@ from routers.sampling_errors import app as errorRouter
 app = FastAPI(debug=True)
 init_logger()
 
-
-
-# Prometheus config
+# Prometheus Initial config + router
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
