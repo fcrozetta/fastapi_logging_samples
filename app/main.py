@@ -1,12 +1,15 @@
 from fastapi import FastAPI
+
 from prometheus_client import make_asgi_app
-from config.logger_config import init_logger
+from config import telemetry
 
 from routers.sampling_logs import app as logRouter
 from routers.sampling_errors import app as errorRouter
 
 app = FastAPI(debug=True)
-init_logger()
+telemetry.init(app)
+
+
 
 # Prometheus Initial config + router
 metrics_app = make_asgi_app()
