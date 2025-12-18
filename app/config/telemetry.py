@@ -7,6 +7,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from pythonjsonlogger.jsonlogger import JsonFormatter
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
@@ -28,11 +29,37 @@ class CorrelatedExceptionLoggingMiddleware(BaseHTTPMiddleware):
             logger.exception("Unhandled exception in request")
             raise
 
+def setup_json_logging() -> None:
+    level = os.getenv("OTEL_PYTHON_LOG_LEVEL", "INFO").upper()
+    log_format = os.getenv("LOG_FORMAT",None)
+    handler = logging.StreamHandler()
+    if  log_format == "json":
+        formatter = JsonFormatter(
+            # These fields become JSON keys
+            "%(asctime)s %(levelname)s %(name)s %(message)s "
+            "%(otelTraceID)s %(otelSpanID)s %(otelServiceName)s",
+            rename_fields={
+                "asctime": "ts",
+                "levelname": "level",
+                "name": "logger",
+                "message": "msg",
+                "otelTraceID": "trace_id",
+                "otelSpanID": "span_id",
+                "otelServiceName": "service",
+            },
+        )
+        handler.setFormatter(formatter)
 
-def _attach_root_handlers(logger_name: str) -> None:
-    log = logging.getLogger(logger_name)
-    # log.handlers = logging.getLogger().handlers  # reuse root handlers/formatters
-    log.propagate = False  # avoid double logging
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(level)
+
+    # Force uvicorn to use the same handler/formatter (prevents mixed logs)
+    for name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
+        log = logging.getLogger(name)
+        log.handlers = [handler]
+        log.setLevel(level)
+        log.propagate = False
 
 
 def init(app: FastAPI):
@@ -45,10 +72,8 @@ def init(app: FastAPI):
     trace.set_tracer_provider(provider)
 
     # Enable log correlation (requires OTEL_PYTHON_LOG_CORRELATION=true to inject)
-    LoggingInstrumentor().instrument(set_logging_format=True)
-    _attach_root_handlers("uvicorn")
-    _attach_root_handlers("uvicorn.error")
-    _attach_root_handlers("uvicorn.access")
+    LoggingInstrumentor().instrument(set_logging_format=False)
+    setup_json_logging()
 
 
     # Create server spans for requests
