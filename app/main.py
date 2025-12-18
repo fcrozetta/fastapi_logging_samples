@@ -7,7 +7,9 @@ from routers.sampling_logs import app as logRouter
 from routers.sampling_errors import app as errorRouter
 
 app = FastAPI(debug=True)
+app.add_middleware(telemetry.CorrelatedExceptionLoggingMiddleware)
 telemetry.init(app)
+
 
 
 
